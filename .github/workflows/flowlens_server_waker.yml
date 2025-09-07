@@ -1,0 +1,37 @@
+name: Flowlens Server Waker
+
+on:
+  workflow_dispatch:   # Manual trigger
+  schedule:
+    - cron: "*/15 * * * *"   # Every 15 minutes
+
+jobs:
+  ping_services:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm ci || (npm init -y && npm install playwright axios fs-extra)
+
+      - name: Install Playwright Browsers
+        run: npx playwright install chromium
+
+      - name: Run Ping Script
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node Flowlens_Server_Waker/main.js
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ping-report
+          path: Flowlens_Server_Waker/output/report.json
