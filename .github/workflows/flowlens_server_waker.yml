@@ -3,7 +3,7 @@ name: Flowlens Server Waker
 on:
   workflow_dispatch:   # Manual trigger
   schedule:
-    - cron: "*/15 * * * *"   # Every 15 minutes
+    - cron: "*/10 * * * *"   # Every 10 minutes
 
 jobs:
   ping_services:
